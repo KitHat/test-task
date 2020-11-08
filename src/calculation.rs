@@ -92,6 +92,30 @@ fn base_test_3() {
     assert_eq!(k, d - (d*f as f64 / 30.0));
 }
 
+#[test]
+fn base_test_4() {
+    let a = false;
+    let b = false;
+    let c = false;
+    let d = 1.5;
+    let e = 6;
+    let f = 7;
+    let e = calculate(a, b, c, d, e, f).unwrap_err();
+    assert_eq!(e, Error::NoMatchingRules);
+}
+
+#[test]
+#[cfg(not(feature="custom2"))]
+fn base_test_5() {
+    let a = true;
+    let b = false;
+    let c = true;
+    let d = 1.5;
+    let e = 6;
+    let f = 7;
+    let e = calculate(a, b, c, d, e, f).unwrap_err();
+    assert_eq!(e, Error::NoMatchingRules);
+}
 
 #[test]
 #[cfg(feature="custom1")]
