@@ -1,19 +1,28 @@
-#[derive(Debug, PartialEq)]
+use serde::Serialize;
+
+#[derive(Debug, PartialEq, Serialize)]
 pub enum HValue {
     M,
     P,
     T
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Responder)]
 pub enum Error {
-    NoMatchingRules
+    #[response(status=404, content_type="plain")]
+    NoMatchingRules(String)
 }
 
-pub fn calculate(a: bool, b: bool, c: bool, d: f64, e: i64, f: i64) -> Result<(HValue, f64), Error> {
+#[derive(Serialize, Debug)]
+pub struct CalcResult {
+    h: HValue,
+    k: f64
+}
+
+pub fn calculate(a: bool, b: bool, c: bool, d: f64, e: i64, f: i64) -> Result<CalcResult, Error> {
     let h = _h_calc(a, b, c)?;
     let k = _k_calc(&h, d, e, f);
-    Ok((h, k))
+    Ok(CalcResult{h, k})
 }
 
 fn _h_calc(a: bool, b: bool, c: bool) -> Result<HValue, Error> {
@@ -21,7 +30,7 @@ fn _h_calc(a: bool, b: bool, c: bool) -> Result<HValue, Error> {
         (true, true, false) => Ok(HValue::M),
         (true, true, true) => Ok(HValue::P),
         (false, true, true) => Ok(HValue::T),
-        _ => Err(Error::NoMatchingRules)
+        _ => Err(Error::NoMatchingRules("No matching rules for this input".to_string()))
     };
     #[cfg(feature="custom2")]
     let h = match (a, b, c, h) {
@@ -60,7 +69,7 @@ fn base_test_1() {
     let d = 1.5;
     let e = 6;
     let f = 7;
-    let (h, k) = calculate(a, b, c, d, e, f).unwrap();
+    let CalcResult{h, k} = calculate(a, b, c, d, e, f).unwrap();
     assert_eq!(h, HValue::P);
     assert_eq!(k, d + (d*(e-f) as f64/25.5));
 }
@@ -74,7 +83,7 @@ fn base_test_2() {
     let d = 1.5;
     let e = 6;
     let f = 7;
-    let (h, k) = calculate(a, b, c, d, e, f).unwrap();
+    let CalcResult{h, k} = calculate(a, b, c, d, e, f).unwrap();
     assert_eq!(h, HValue::M);
     assert_eq!(k, d + (d*e as f64 / 10.0));
 }
@@ -87,7 +96,7 @@ fn base_test_3() {
     let d = 1.5;
     let e = 6;
     let f = 7;
-    let (h, k) = calculate(a, b, c, d, e, f).unwrap();
+    let CalcResult{h, k} = calculate(a, b, c, d, e, f).unwrap();
     assert_eq!(h, HValue::T);
     assert_eq!(k, d - (d*f as f64 / 30.0));
 }
@@ -101,7 +110,7 @@ fn base_test_4() {
     let e = 6;
     let f = 7;
     let e = calculate(a, b, c, d, e, f).unwrap_err();
-    assert_eq!(e, Error::NoMatchingRules);
+    assert_matches!(e, Error::NoMatchingRules(_));
 }
 
 #[test]
@@ -114,7 +123,7 @@ fn base_test_5() {
     let e = 6;
     let f = 7;
     let e = calculate(a, b, c, d, e, f).unwrap_err();
-    assert_eq!(e, Error::NoMatchingRules);
+    assert_matches!(e, Error::NoMatchingRules(_));
 }
 
 #[test]
@@ -126,7 +135,7 @@ fn custom1_test() {
     let d = 1.5;
     let e = 6;
     let f = 7;
-    let (h, k) = calculate(a, b, c, d, e, f).unwrap();
+    let CalcResult{h, k} = calculate(a, b, c, d, e, f).unwrap();
     assert_eq!(h, HValue::P);
     assert_eq!(k, 2.0*d + (d*e as f64/100.0));
 }
@@ -140,7 +149,7 @@ fn custom2_test_1() {
     let d = 1.5;
     let e = 6;
     let f = 7;
-    let (h, k) = calculate(a, b, c, d, e, f).unwrap();
+    let CalcResult{h, k} = calculate(a, b, c, d, e, f).unwrap();
     assert_eq!(h, HValue::T);
     assert_eq!(k, d - (d*f as f64 / 30.0));
 }
@@ -154,7 +163,7 @@ fn custom2_test_2() {
     let d = 1.5;
     let e = 6;
     let f = 7;
-    let (h, k) = calculate(a, b, c, d, e, f).unwrap();
+    let CalcResult{h, k} = calculate(a, b, c, d, e, f).unwrap();
     assert_eq!(h, HValue::M);
     assert_eq!(k, f as f64 + d + (d*e as f64 / 100.0));
 }
@@ -168,7 +177,7 @@ fn custom2_test_3() {
     let d = 1.5;
     let e = 6;
     let f = 7;
-    let (h, k) = calculate(a, b, c, d, e, f).unwrap();
+    let CalcResult{h, k} = calculate(a, b, c, d, e, f).unwrap();
     assert_eq!(h, HValue::T);
     assert_eq!(k, d - (d*f as f64 / 30.0));
 }
