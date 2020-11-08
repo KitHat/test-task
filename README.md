@@ -35,7 +35,7 @@ There was a couple of decisions regarding implementation and tools to use.
 
 It is not really a decision but a choice of implementation variant. We could have set the customs during the runtime (through the query param on rest endpoint or some config file that is reloaded) or we can set the customs during the compile time using features. In a way how this task is stated there is no strong arguments in favor of any of this solution. However in my opinion selecting behaviour during the compile time is more of a Rust'ish way of programming and here are the reasons why: 
 
-* you can store artifacts 
+* you can store artifacts built with different features and deploy them at any time
 * it will work faster -- unnecessary code will be just compiled out.
 * executable will be smaller for the same reason.
 * it will be easier to recompile it as a shared object -- you will not need to define some complex way of passing the behaviour through C API.
