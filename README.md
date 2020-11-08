@@ -14,6 +14,11 @@ There are two ways how to launch this app:
 ```
 It will start on port 8000 on localhost. In features you should specify a customs set that you want to enable. If you want to run just on base set of rules you can omit the `--features` flag.
 
+**NB**: you should be on `nightly` version of Rust to compile it. You can override the Rust version only for this directory:
+```
+rustup override set nightly
+```
+
 ### Running the tests
 
 I have only made unit tests to verify that the logic works as expected. You can run the tests with this command:
