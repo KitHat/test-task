@@ -4,9 +4,10 @@
 use rocket_contrib::json::Json;
 
 mod calculation;
+mod models;
 
 #[get("/calculate?<a>&<b>&<c>&<d>&<e>&<f>")]
-fn calculate(a: bool, b: bool, c: bool, d: f64, e: i64, f: i64) -> Result<Json<calculation::CalcResult>, calculation::Error> {
+fn calculate(a: bool, b: bool, c: bool, d: f64, e: i64, f: i64) -> Result<Json<models::CalcResult>, models::Error> {
     calculation::calculate(a, b, c, d, e, f).map(|res| Json(res))
 }
 
